@@ -21,8 +21,12 @@
 bash "varnish-cache.org" do
   user "root"
   code <<-EOH
-    rpm -q varnish || rpm --nosignature -i #{node['varnish']['release_rpm']}
-  EOH
+    echo '[varnish-2.1]
+name=Varnish 2.1 for Enterprise Linux 5 - $basearch
+baseurl=http://repo.varnish-cache.org/redhat/varnish-2.1/el5/$basearch
+enabled=1
+gpgcheck=0' > /etc/yum.repos.d/varnish.repo
+EOH
   only_if {platform?("redhat", "centos", "fedora", "amazon", "scientific")}
 end
 
@@ -40,7 +44,7 @@ end
 
 pkgs = value_for_platform(
   [ "centos", "redhat", "fedora" ] => {
-    "default" => %w{ varnish-release varnish }
+    "default" => %w{ varnish }
   },
   [ "debian", "ubuntu" ] => {
     "default" => %w{ varnish }
